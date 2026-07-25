@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HelpDesk+ — Central de Chamados</title>
+
+  <!-- Bootstrap 5 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <!-- AOS (animações ao rolar) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css">
+
+  <!-- Estilos próprios do projeto (por cima do Bootstrap) -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="site-header navbar navbar-expand navbar-dark sticky-top">
+    <div class="container site-header__inner">
+      <a href="index.html" class="brand navbar-brand">
+        <span class="brand__logo"><i class="fa-solid fa-headset"></i></span>
+        HelpDesk+
+      </a>
+      <nav class="main-nav nav" aria-label="Navegação principal">
+        <a class="nav-link" href="index.html" aria-current="page">Início</a>
+        <a class="nav-link" href="admin.html">Administração</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" id="vanta-hero">
+    <div class="hero__inner" data-aos="fade-up">
+      <h1>Central de Chamados de Suporte</h1>
+      <p>Abra um chamado em segundos e acompanhe o time de TI resolvendo o seu problema.</p>
+      <button type="button" class="btn btn-light btn-lg fw-semibold" id="btn-abrir-chamado">
+        <i class="fa-solid fa-plus me-2"></i>Abrir chamado
+      </button>
+    </div>
+  </section>
+
+  <section class="features container" aria-label="Como funciona">
+    <div class="row g-3">
+      <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="0">
+        <div class="feature-card card h-100 shadow-sm border-0">
+          <div class="card-body">
+            <div class="feature-card__icon"><i class="fa-solid fa-file-pen"></i></div>
+            <h3 class="card-title h6">Abertura simples</h3>
+            <p class="card-text">Descreva o problema e informe seus dados em um formulário rápido.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+        <div class="feature-card card h-100 shadow-sm border-0">
+          <div class="card-body">
+            <div class="feature-card__icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <h3 class="card-title h6">Busca e filtro</h3>
+            <p class="card-text">Encontre seu chamado por título ou pelo status atual.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+        <div class="feature-card card h-100 shadow-sm border-0">
+          <div class="card-body">
+            <div class="feature-card__icon"><i class="fa-solid fa-bolt"></i></div>
+            <h3 class="card-title h6">Prioridade automática</h3>
+            <p class="card-text">O sistema recalcula a urgência conforme o tempo sem resposta.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+        <div class="feature-card card h-100 shadow-sm border-0">
+          <div class="card-body">
+            <div class="feature-card__icon"><i class="fa-solid fa-user-gear"></i></div>
+            <h3 class="card-title h6">Técnico responsável</h3>
+            <p class="card-text">Veja quem está cuidando do seu chamado assim que for atribuído.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="page container" id="listagem">
+    <h2 class="page-title">Chamados abertos</h2>
+    <p class="page-subtitle">Acompanhe todos os chamados registrados no HelpDesk+.</p>
+
+    <div class="panel card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="toolbar row g-3 align-items-end">
+          <div class="field col-12 col-md">
+            <label for="busca-titulo" class="form-label">Buscar por título</label>
+            <input type="text" id="busca-titulo" class="form-control" placeholder="Ex: impressora, VPN, senha..." aria-label="Buscar chamado por título" />
+          </div>
+          <div class="field col-12 col-md-4">
+            <label for="filtro-status" class="form-label">Status</label>
+            <select id="filtro-status" class="form-select" aria-label="Filtrar por status">
+              <option value="">Todos</option>
+              <option value="Aberto">Aberto</option>
+              <option value="Em andamento">Em andamento</option>
+              <option value="Aguardando solicitante">Aguardando solicitante</option>
+              <option value="Resolvido">Resolvido</option>
+              <option value="Fechado">Fechado</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="lista-chamados" class="card-grid row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mt-1"></div>
+
+        <div id="estado-vazio" class="empty-state text-center py-5" hidden>
+          <p>Nenhum chamado encontrado.</p>
+          <button type="button" class="btn btn-primary" id="btn-vazio-cadastrar">Abrir chamado</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal de abertura de chamado -->
+  <div class="modal fade" id="modal-chamado" tabindex="-1" aria-labelledby="modal-chamado-titulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="modal-chamado-titulo">Abrir novo chamado</h2>
+          <button type="button" class="btn-close" id="fechar-modal-chamado" aria-label="Fechar formulário"></button>
+        </div>
+
+        <form id="form-chamado" novalidate>
+          <div class="modal-body">
+            <div class="form-grid row g-3">
+              <div class="field field--full col-12">
+                <label for="c-titulo" class="form-label">Título</label>
+                <input type="text" id="c-titulo" name="titulo" class="form-control" placeholder="Resuma o problema em poucas palavras" />
+                <span class="field-error text-danger small" id="erro-c-titulo"></span>
+              </div>
+
+              <div class="field field--full col-12">
+                <label for="c-descricao" class="form-label">Descrição</label>
+                <textarea id="c-descricao" name="descricao" class="form-control" rows="4" placeholder="Detalhe o que está acontecendo"></textarea>
+                <span class="field-error text-danger small" id="erro-c-descricao"></span>
+              </div>
+
+              <div class="field col-12 col-md-6">
+                <label for="c-solicitante" class="form-label">Seu nome</label>
+                <input type="text" id="c-solicitante" name="solicitante" class="form-control" placeholder="Nome completo" />
+                <span class="field-error text-danger small" id="erro-c-solicitante"></span>
+              </div>
+
+              <div class="field col-12 col-md-6">
+                <label for="c-categoria" class="form-label">Categoria (opcional)</label>
+                <input type="text" id="c-categoria" name="categoria" class="form-control" placeholder="Ex: Hardware, Software, Rede" />
+                <span class="field-error text-danger small" id="erro-c-categoria"></span>
+              </div>
+            </div>
+
+            <div class="form-message" id="msg-form-chamado"></div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" id="cancelar-form-chamado">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Enviar chamado</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer text-center">
+    HelpDesk+ &copy; 2026 — Desenvolvido por Marlon
+  </footer>
+
+  <!-- Three.js + Vanta (fundo animado do hero) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.waves.min.js"></script>
+  <!-- AOS -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Bootstrap 5 (bundle inclui Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Importa o script JavaScript que está na mesma pasta -->
+  <script src="script.js"></script>
+</body>
+</html>

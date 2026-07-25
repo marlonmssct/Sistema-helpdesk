@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HelpDesk+ — Administração</title>
+
+  <!-- Bootstrap 5 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <!-- AOS (animações ao rolar) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css">
+
+  <!-- Estilos próprios do projeto (por cima do Bootstrap) -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="site-header navbar navbar-expand navbar-dark sticky-top">
+    <div class="container site-header__inner">
+      <a href="index.html" class="brand navbar-brand">
+        <span class="brand__logo"><i class="fa-solid fa-headset"></i></span>
+        HelpDesk+
+      </a>
+      <nav class="main-nav nav" aria-label="Navegação principal">
+        <a class="nav-link" href="index.html">Início</a>
+        <a class="nav-link" href="admin.html" aria-current="page">Administração</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page container">
+    <h2 class="page-title">Painel de administração</h2>
+    <p class="page-subtitle">Área restrita ao time de TI: gestão de chamados e de técnicos.</p>
+
+    <div class="tabs nav nav-tabs" role="tablist" aria-label="Seções da administração">
+      <button type="button" class="tab-btn nav-link active" id="tab-chamados" role="tab" aria-selected="true" aria-controls="painel-chamados">
+        <i class="fa-solid fa-ticket me-1"></i>Chamados
+      </button>
+      <button type="button" class="tab-btn nav-link" id="tab-tecnicos" role="tab" aria-selected="false" aria-controls="painel-tecnicos">
+        <i class="fa-solid fa-user-gear me-1"></i>Técnicos
+      </button>
+    </div>
+
+    <!-- ===================== TELA 2 — Gestão de chamados ===================== -->
+    <section id="painel-chamados" class="tab-panel">
+      <div class="row g-3 mb-3" data-aos="fade-up">
+        <div class="col-12">
+          <div class="panel card border-0 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2 class="h6 mb-0"><i class="fa-solid fa-check-circle me-2"></i>Chamados resolvidos</h2>
+                <span id="progresso-resolvidos-texto" class="small text-muted"></span>
+              </div>
+              <div class="progress" role="progressbar" aria-label="Chamados resolvidos" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="height: 1.25rem;">
+                <div id="progresso-resolvidos-barra" class="progress-bar bg-success" style="width: 0%"></div>
+                <div id="progresso-pendentes-barra" class="progress-bar bg-secondary bg-opacity-25" style="width: 100%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="toolbar row g-3 align-items-end">
+            <div class="field col-12 col-md">
+              <label for="admin-busca-titulo" class="form-label">Buscar por título</label>
+              <input type="text" id="admin-busca-titulo" class="form-control" placeholder="Buscar chamado..." />
+            </div>
+            <div class="field col-12 col-md-4">
+              <label for="admin-filtro-status" class="form-label">Status</label>
+              <select id="admin-filtro-status" class="form-select">
+                <option value="">Todos</option>
+                <option value="Aberto">Aberto</option>
+                <option value="Em andamento">Em andamento</option>
+                <option value="Aguardando solicitante">Aguardando solicitante</option>
+                <option value="Resolvido">Resolvido</option>
+                <option value="Fechado">Fechado</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="detail-layout row g-3 mt-1">
+            <div class="col-12 col-lg-6">
+              <div id="admin-lista-chamados" class="detail-list"></div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+              <div id="sem-selecao" class="panel card border-0 shadow-sm mb-0">
+                <div class="card-body">
+                  <p class="text-muted small mb-0">Selecione um chamado na lista para ver os detalhes.</p>
+                </div>
+              </div>
+
+              <div id="ticket-detail" class="panel card border-0 shadow-sm" hidden>
+                <div class="card-body">
+                  <h2 id="td-titulo" class="h5"></h2>
+
+                  <div class="ticket-detail__field">
+                    <span>Descrição</span>
+                    <div id="td-descricao"></div>
+                  </div>
+                  <div class="ticket-detail__field">
+                    <span>Solicitante</span>
+                    <div id="td-solicitante"></div>
+                  </div>
+                  <div class="ticket-detail__field">
+                    <span>Status atual</span>
+                    <div id="td-status"></div>
+                  </div>
+                  <div class="ticket-detail__field">
+                    <span>Prioridade</span>
+                    <div id="td-prioridade"></div>
+                  </div>
+                  <div class="ticket-detail__field">
+                    <span>Técnico responsável</span>
+                    <div id="td-tecnico"></div>
+                  </div>
+
+                  <div class="ticket-detail__actions row g-3">
+                    <div class="field col-12 col-md-6">
+                      <label for="td-select-status" class="form-label">Alterar status</label>
+                      <select id="td-select-status" class="form-select">
+                        <option value="Aberto">Aberto</option>
+                        <option value="Em andamento">Em andamento</option>
+                        <option value="Aguardando solicitante">Aguardando solicitante</option>
+                        <option value="Resolvido">Resolvido</option>
+                        <option value="Fechado">Fechado</option>
+                      </select>
+                    </div>
+                    <div class="field col-12 col-md-6">
+                      <label for="td-select-tecnico" class="form-label">Atribuir/reatribuir técnico</label>
+                      <select id="td-select-tecnico" class="form-select"></select>
+                    </div>
+                  </div>
+
+                  <div class="panel card border-0" style="background:var(--bs-body-bg);">
+                    <div class="card-body">
+                      <h2 class="h6">Registrar interação</h2>
+                      <div class="form-grid row g-3">
+                        <div class="field col-12 col-md-6">
+                          <label for="int-autor" class="form-label">Autor</label>
+                          <input type="text" id="int-autor" class="form-control" placeholder="Seu nome" />
+                          <span class="field-error text-danger small" id="erro-int-autor"></span>
+                        </div>
+                        <div class="field col-12 col-md-6">
+                          <label for="int-tipo" class="form-label">Tipo</label>
+                          <select id="int-tipo" class="form-select">
+                            <option value="pedido_info">Pedido de informação</option>
+                            <option value="comentario">Comentário</option>
+                          </select>
+                        </div>
+                        <div class="field field--full col-12">
+                          <label for="int-mensagem" class="form-label">Mensagem</label>
+                          <textarea id="int-mensagem" class="form-control" rows="3" placeholder="Descreva a interação"></textarea>
+                          <span class="field-error text-danger small" id="erro-int-mensagem"></span>
+                        </div>
+                      </div>
+                      <div class="form-message" id="msg-form-interacao"></div>
+                      <button type="button" class="btn btn-primary btn-sm mt-3" id="btn-registrar-interacao">
+                        <i class="fa-solid fa-paper-plane me-1"></i>Registrar interação
+                      </button>
+                    </div>
+                  </div>
+
+                  <h2 class="h6 mt-4">Histórico</h2>
+                  <div id="timeline" class="timeline"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TELA 3 — CRUD de técnicos ===================== -->
+    <section id="painel-tecnicos" class="tab-panel d-none">
+      <div class="panel card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h6 mb-0">Técnicos cadastrados</h2>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-novo-tecnico">
+              <i class="fa-solid fa-user-plus me-1"></i>Novo técnico
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table table table-hover align-middle">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>E-mail</th>
+                  <th>Especialidade</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-tecnicos"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal de cadastro/edição de técnico -->
+  <div class="modal fade" id="modal-tecnico" tabindex="-1" aria-labelledby="modal-tecnico-titulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="modal-tecnico-titulo">Novo técnico</h2>
+          <button type="button" class="btn-close" id="fechar-modal-tecnico" aria-label="Fechar formulário"></button>
+        </div>
+
+        <form id="form-tecnico" novalidate>
+          <div class="modal-body">
+            <input type="hidden" id="t-id" />
+            <div class="form-grid row g-3">
+              <div class="field field--full col-12">
+                <label for="t-nome" class="form-label">Nome</label>
+                <input type="text" id="t-nome" class="form-control" placeholder="Nome completo" />
+                <span class="field-error text-danger small" id="erro-t-nome"></span>
+              </div>
+              <div class="field field--full col-12">
+                <label for="t-email" class="form-label">E-mail</label>
+                <input type="email" id="t-email" class="form-control" placeholder="nome@empresa.com" />
+                <span class="field-error text-danger small" id="erro-t-email"></span>
+              </div>
+              <div class="field field--full col-12">
+                <label for="t-especialidade" class="form-label">Especialidade</label>
+                <input type="text" id="t-especialidade" class="form-control" placeholder="Ex: Redes, Infraestrutura..." />
+                <span class="field-error text-danger small" id="erro-t-especialidade"></span>
+              </div>
+              <div class="field field--full col-12">
+                <div class="checkbox-option form-check">
+                  <input type="checkbox" id="t-ativo" class="form-check-input" checked />
+                  <label for="t-ativo" class="form-check-label">Técnico ativo</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-message" id="msg-form-tecnico"></div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" id="cancelar-form-tecnico">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Salvar técnico</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer text-center">
+    HelpDesk+ &copy; 2026 — Desenvolvido por Marlon
+  </footer>
+
+  <!-- AOS -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Bootstrap 5 (bundle inclui Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Importa o script JavaScript que está na mesma pasta -->
+  <script src="script.js"></script>
+</body>
+</html>
